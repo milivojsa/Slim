@@ -54,7 +54,7 @@ class Uri implements UriInterface
         protected string $host,
         protected ?int $port = null,
         protected string $path = '/',
-        protected string $query = '',
+        protected ?string $query = '',
         protected string $fragment = '',
         protected string $user = '',
         protected string $password = ''
