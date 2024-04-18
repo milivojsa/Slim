@@ -117,9 +117,11 @@ class Route extends Routable implements RouteInterface
      *
      * @param string|Closure $callable
      */
-    public function setCallable($callable)
+    public function setCallable($callable): RouteInterface
     {
         $this->callable = $callable;
+
+        return $this;
     }
 
     /**
@@ -127,7 +129,7 @@ class Route extends Routable implements RouteInterface
      *
      * @return string[]
      */
-    public function getMethods()
+    public function getMethods(): array
     {
         return $this->methods;
     }
@@ -155,7 +157,7 @@ class Route extends Routable implements RouteInterface
      *
      * @return string
      */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
