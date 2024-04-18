@@ -23,10 +23,6 @@ class SlimException extends Exception
      */
     protected $response;
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
-     */
     public function __construct(ServerRequestInterface $request, ResponseInterface $response)
     {
         parent::__construct();

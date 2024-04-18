@@ -80,9 +80,6 @@ class Router implements RouterInterface
      */
     protected $dispatcher;
 
-    /**
-     * @param RouteParser   $parser
-     */
     public function __construct(RouteParser $parser = null)
     {
         $this->routeParser = $parser ?: new StdParser;
@@ -149,9 +146,6 @@ class Router implements RouterInterface
         return $this;
     }
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
@@ -244,9 +238,6 @@ class Router implements RouterInterface
         return $this->dispatcher;
     }
 
-    /**
-     * @param Dispatcher $dispatcher
-     */
     public function setDispatcher(Dispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
@@ -382,9 +373,7 @@ class Router implements RouterInterface
         }
         $url = implode('', $segments);
 
-        $hasQueryParams = array_filter($queryParams, function ($value) {
-            return $value !== null;
-        }) !== [];
+        $hasQueryParams = array_filter($queryParams, fn($value) => $value !== null) !== [];
 
         if ($hasQueryParams) {
             $url .= '?' . http_build_query($queryParams);
@@ -427,7 +416,6 @@ class Router implements RouterInterface
     /**
      * Get fully qualified URL for named route
      *
-     * @param UriInterface $uri
      * @param string $routeName
      * @param array $data Named argument replacement data
      * @param array $queryParams Optional query string parameters

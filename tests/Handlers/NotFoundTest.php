@@ -38,11 +38,11 @@ class NotFoundTest extends PHPUnit_Framework_TestCase
         $notAllowed = new NotFound();
 
         /** @var Response $res */
-        $res = $notAllowed->__invoke($this->getRequest('GET', $acceptHeader), new Response(), ['POST', 'PUT']);
+        $res = $notAllowed->__invoke($this->getRequest('GET', $acceptHeader), new Response());
 
         $this->assertSame(404, $res->getStatusCode());
         $this->assertSame($contentType, $res->getHeaderLine('Content-Type'));
-        $this->assertEquals(0, strpos((string)$res->getBody(), $startOfBody));
+        $this->assertEquals(0, strpos((string)$res->getBody(), (string) $startOfBody));
     }
 
     public function testNotFoundContentType()
@@ -51,7 +51,7 @@ class NotFoundTest extends PHPUnit_Framework_TestCase
         $errorMock->method('determineContentType')
             ->will($this->returnValue('unknown/type'));
 
-        $req = $this->getMockBuilder('Slim\Http\Request')->disableOriginalConstructor()->getMock();
+        $req = $this->getMockBuilder(\Slim\Http\Request::class)->disableOriginalConstructor()->getMock();
 
         $this->setExpectedException('\UnexpectedValueException');
         $errorMock->__invoke($req, new Response(), ['POST']);
@@ -66,7 +66,7 @@ class NotFoundTest extends PHPUnit_Framework_TestCase
     {
         $uri = new Uri('http', 'example.com', 80, '/notfound');
 
-        $req = $this->getMockBuilder('Slim\Http\Request')->disableOriginalConstructor()->getMock();
+        $req = $this->getMockBuilder(\Slim\Http\Request::class)->disableOriginalConstructor()->getMock();
         $req->expects($this->once())->method('getHeaderLine')->will($this->returnValue($contentType));
         $req->expects($this->any())->method('getUri')->will($this->returnValue($uri));
 

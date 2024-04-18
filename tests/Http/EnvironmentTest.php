@@ -50,7 +50,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
             'REQUEST_URI' => '/foo/bar?abc=123',
         ]);
 
-        $this->assertInstanceOf('\Slim\Interfaces\CollectionInterface', $env);
+        $this->assertInstanceOf(\Slim\Interfaces\CollectionInterface::class, $env);
         $this->assertEquals('/foo/bar/index.php', $env->get('SCRIPT_NAME'));
         $this->assertEquals('/foo/bar?abc=123', $env->get('REQUEST_URI'));
         $this->assertEquals('localhost', $env->get('HTTP_HOST'));
@@ -65,7 +65,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
             'HTTPS' => 'on'
         ]);
 
-        $this->assertInstanceOf('\Slim\Interfaces\CollectionInterface', $env);
+        $this->assertInstanceOf(\Slim\Interfaces\CollectionInterface::class, $env);
         $this->assertEquals('on', $env->get('HTTPS'));
         $this->assertEquals(443, $env->get('SERVER_PORT'));
     }
@@ -79,7 +79,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
             'REQUEST_SCHEME' => 'https'
         ]);
 
-        $this->assertInstanceOf('\Slim\Interfaces\CollectionInterface', $env);
+        $this->assertInstanceOf(\Slim\Interfaces\CollectionInterface::class, $env);
         $this->assertEquals('https', $env->get('REQUEST_SCHEME'));
         $this->assertEquals(443, $env->get('SERVER_PORT'));
     }

@@ -41,7 +41,7 @@ class App
      *
      * @var string
      */
-    const VERSION = '3.12.5';
+    public const VERSION = '3.12.5';
 
     /**
      * @var ContainerInterface
@@ -242,9 +242,7 @@ class App
      */
     public function redirect($from, $to, $status = 302)
     {
-        $handler = function ($request, ResponseInterface $response) use ($to, $status) {
-            return $response->withHeader('Location', (string)$to)->withStatus($status);
-        };
+        $handler = fn($request, ResponseInterface $response) => $response->withHeader('Location', (string)$to)->withStatus($status);
 
         return $this->get($from, $handler);
     }
@@ -331,8 +329,6 @@ class App
      * Used for cases where an incoming request has an unrecognized method,
      * rather than throwing an exception and not catching it all the way up.
      *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      *
      * @return ResponseInterface
      *
@@ -365,11 +361,8 @@ class App
      * This method traverses the application middleware stack and then returns the
      * resultant Response object.
      *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      *
      * @return ResponseInterface
-     *
      * @throws Exception
      * @throws Throwable
      */
@@ -401,8 +394,6 @@ class App
 
     /**
      * Send the response to the client
-     *
-     * @param ResponseInterface $response
      */
     public function respond(ResponseInterface $response)
     {
@@ -568,8 +559,6 @@ class App
     /**
      * Dispatch the router to find the route. Prepare the route for use.
      *
-     * @param ServerRequestInterface $request
-     * @param RouterInterface        $router
      *
      * @return ServerRequestInterface
      */
@@ -580,7 +569,7 @@ class App
         if ($routeInfo[0] === Dispatcher::FOUND) {
             $routeArguments = [];
             foreach ($routeInfo[2] as $k => $v) {
-                $routeArguments[$k] = urldecode($v);
+                $routeArguments[$k] = urldecode((string) $v);
             }
 
             $route = $router->lookupRoute($routeInfo[1]);
@@ -598,10 +587,8 @@ class App
     /**
      * Finalize response
      *
-     * @param ResponseInterface $response
      *
      * @return ResponseInterface
-     *
      * @throws RuntimeException
      */
     protected function finalize(ResponseInterface $response)
@@ -641,7 +628,6 @@ class App
      *
      * @see https://tools.ietf.org/html/rfc7231
      *
-     * @param ResponseInterface $response
      *
      * @return bool
      */
@@ -657,7 +643,6 @@ class App
     /**
      * Helper method to check if the current request is a HEAD request
      *
-     * @param RequestInterface $request
      *
      * @return bool
      */
@@ -670,9 +655,6 @@ class App
      * Call relevant handler from the Container if needed. If it doesn't exist,
      * then just re-throw.
      *
-     * @param  Exception              $e
-     * @param  ServerRequestInterface $request
-     * @param  ResponseInterface      $response
      *
      * @return ResponseInterface
      *
@@ -709,9 +691,6 @@ class App
      * Call relevant handler from the Container if needed. If it doesn't exist,
      * then just re-throw.
      *
-     * @param  Throwable $e
-     * @param  ServerRequestInterface $request
-     * @param  ResponseInterface $response
      *
      * @return ResponseInterface
      *

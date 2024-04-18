@@ -45,7 +45,7 @@ class PhpErrorTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(500, $res->getStatusCode());
         $this->assertSame($contentType, $res->getHeaderLine('Content-Type'));
-        $this->assertEquals(0, strpos((string)$res->getBody(), $startOfBody));
+        $this->assertEquals(0, strpos((string)$res->getBody(), (string) $startOfBody));
     }
 
     /**
@@ -65,7 +65,7 @@ class PhpErrorTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(500, $res->getStatusCode());
         $this->assertSame($contentType, $res->getHeaderLine('Content-Type'));
-        $this->assertEquals(0, strpos((string)$res->getBody(), $startOfBody));
+        $this->assertEquals(0, strpos((string)$res->getBody(), (string) $startOfBody));
     }
 
     /**
@@ -77,7 +77,7 @@ class PhpErrorTest extends PHPUnit_Framework_TestCase
         $errorMock->method('determineContentType')
             ->will($this->returnValue('unknown/type'));
 
-        $req = $this->getMockBuilder('Slim\Http\Request')->disableOriginalConstructor()->getMock();
+        $req = $this->getMockBuilder(\Slim\Http\Request::class)->disableOriginalConstructor()->getMock();
 
         $this->setExpectedException('\UnexpectedValueException');
         $errorMock->__invoke($req, new Response(), new Exception());
@@ -104,7 +104,7 @@ class PhpErrorTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(500, $res->getStatusCode());
         $this->assertSame($contentType, $res->getHeaderLine('Content-Type'));
-        $this->assertEquals(0, strpos((string)$res->getBody(), $startOfBody));
+        $this->assertEquals(0, strpos((string)$res->getBody(), (string) $startOfBody));
     }
 
     /**
@@ -137,7 +137,7 @@ class PhpErrorTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(500, $res->getStatusCode());
         $this->assertSame($contentType, $res->getHeaderLine('Content-Type'));
-        $this->assertEquals(0, strpos((string)$res->getBody(), $startOfBody));
+        $this->assertEquals(0, strpos((string)$res->getBody(), (string) $startOfBody));
     }
 
     /**
@@ -152,7 +152,7 @@ class PhpErrorTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue('unknown/type'));
 
         $throwable = $this->getMockBuilder('Throwable')->getMock();
-        $req = $this->getMockBuilder('Slim\Http\Request')->disableOriginalConstructor()->getMock();
+        $req = $this->getMockBuilder(\Slim\Http\Request::class)->disableOriginalConstructor()->getMock();
 
         $errorMock->__invoke($req, new Response(), $throwable);
     }
@@ -164,7 +164,7 @@ class PhpErrorTest extends PHPUnit_Framework_TestCase
      */
     protected function getRequest($method, $acceptHeader)
     {
-        $req = $this->getMockBuilder('Slim\Http\Request')->disableOriginalConstructor()->getMock();
+        $req = $this->getMockBuilder(\Slim\Http\Request::class)->disableOriginalConstructor()->getMock();
         $req->expects($this->once())->method('getHeaderLine')->will($this->returnValue($acceptHeader));
 
         return $req;

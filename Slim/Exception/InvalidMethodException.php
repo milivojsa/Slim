@@ -18,7 +18,6 @@ class InvalidMethodException extends InvalidArgumentException
     protected $request;
 
     /**
-     * @param ServerRequestInterface $request
      * @param string                 $method
      */
     public function __construct(ServerRequestInterface $request, $method)

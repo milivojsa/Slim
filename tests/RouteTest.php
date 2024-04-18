@@ -107,8 +107,8 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $route->finalize();
 
         $route->callMiddlewareStack(
-            $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder('Psr\Http\Message\ResponseInterface')->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(\Psr\Http\Message\ServerRequestInterface::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(\Psr\Http\Message\ResponseInterface::class)->disableOriginalConstructor()->getMock()
         );
 
         $this->assertEquals($route, $bottom);
@@ -128,8 +128,8 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $route->finalize();
 
         $route->callMiddlewareStack(
-            $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder('Psr\Http\Message\ResponseInterface')->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(\Psr\Http\Message\ServerRequestInterface::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(\Psr\Http\Message\ResponseInterface::class)->disableOriginalConstructor()->getMock()
         );
 
         $this->assertSame($called, 1);
@@ -151,8 +151,8 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $route->finalize();
 
         $route->callMiddlewareStack(
-            $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder('Psr\Http\Message\ResponseInterface')->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(\Psr\Http\Message\ServerRequestInterface::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(\Psr\Http\Message\ResponseInterface::class)->disableOriginalConstructor()->getMock()
         );
 
         $this->assertSame($called, 1);
@@ -230,7 +230,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $response = new Response;
         $result = $route->callMiddlewareStack($request, $response);
 
-        $this->assertInstanceOf('Slim\Http\Response', $result);
+        $this->assertInstanceOf(\Slim\Http\Response::class, $result);
     }
 
     public function testControllerInContainer()
@@ -252,15 +252,13 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
         $result = $route->callMiddlewareStack($request, new Response);
 
-        $this->assertInstanceOf('Slim\Http\Response', $result);
+        $this->assertInstanceOf(\Slim\Http\Response::class, $result);
         $this->assertEquals(1, CallableTest::$CalledCount);
     }
 
     public function testInvokeWhenReturningAResponse()
     {
-        $callable = function ($req, $res, $args) {
-            return $res->write('foo');
-        };
+        $callable = fn($req, $res, $args) => $res->write('foo');
         $route = new Route(['GET'], '/', $callable);
 
         $env = Environment::mock();
@@ -279,9 +277,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testInvokeWhenReturningAString()
     {
-        $callable = function ($req, $res, $args) {
-            return "foo";
-        };
+        $callable = fn($req, $res, $args) => "foo";
         $route = new Route(['GET'], '/', $callable);
 
         $env = Environment::mock();
@@ -303,7 +299,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
      */
     public function testInvokeWithException()
     {
-        $callable = function ($req, $res, $args) {
+        $callable = function ($req, $res, $args): never {
             throw new Exception();
         };
         $route = new Route(['GET'], '/', $callable);
@@ -351,9 +347,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $container = new Container();
         $container['CallableTest'] = new CallableTest;
-        $container['foundHandler'] = function () {
-            return new InvocationStrategyTest();
-        };
+        $container['foundHandler'] = fn() => new InvocationStrategyTest();
 
         $route = new Route(['GET'], '/', 'CallableTest:toCall');
         $route->setContainer($container);
@@ -364,7 +358,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
         $result = $route->callMiddlewareStack($request, new Response);
 
-        $this->assertInstanceOf('Slim\Http\Response', $result);
+        $this->assertInstanceOf(\Slim\Http\Response::class, $result);
         $this->assertEquals([$container['CallableTest'], 'toCall'], InvocationStrategyTest::$LastCalledFor);
     }
 
@@ -379,9 +373,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $container = new Container();
         $container['CallableTest2'] = new CallableTest;
-        $container['foundHandler'] = function () {
-            return new InvocationStrategyTest();
-        };
+        $container['foundHandler'] = fn() => new InvocationStrategyTest();
 
         $route = new Route(['GET'], '/', 'CallableTest:toCall'); //Note that this doesn't actually exist
         $route->setContainer($container);
@@ -394,7 +386,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
         $result = $route->callMiddlewareStack($request, new Response);
 
-        $this->assertInstanceOf('Slim\Http\Response', $result);
+        $this->assertInstanceOf(\Slim\Http\Response::class, $result);
         $this->assertEquals([$container['CallableTest2'], 'toCall'], InvocationStrategyTest::$LastCalledFor);
     }
 }

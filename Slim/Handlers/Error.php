@@ -28,23 +28,12 @@ class Error extends AbstractError
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, Exception $exception)
     {
         $contentType = $this->determineContentType($request);
-        switch ($contentType) {
-            case 'application/json':
-                $output = $this->renderJsonErrorMessage($exception);
-                break;
-
-            case 'text/xml':
-            case 'application/xml':
-                $output = $this->renderXmlErrorMessage($exception);
-                break;
-
-            case 'text/html':
-                $output = $this->renderHtmlErrorMessage($exception);
-                break;
-
-            default:
-                throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
-        }
+        $output = match ($contentType) {
+            'application/json' => $this->renderJsonErrorMessage($exception),
+            'text/xml', 'application/xml' => $this->renderXmlErrorMessage($exception),
+            'text/html' => $this->renderHtmlErrorMessage($exception),
+            default => throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType),
+        };
 
         $this->writeToErrorLog($exception);
 
@@ -60,7 +49,6 @@ class Error extends AbstractError
     /**
      * Render HTML error page
      *
-     * @param  Exception $exception
      *
      * @return string
      */
@@ -99,7 +87,6 @@ class Error extends AbstractError
      *
      * Provided for backwards compatibility; use renderHtmlExceptionOrError().
      *
-     * @param Exception $exception
      *
      * @return string
      */
@@ -123,7 +110,7 @@ class Error extends AbstractError
             throw new RuntimeException("Unexpected type. Expected Exception or Error.");
         }
 
-        $html = sprintf('<div><strong>Type:</strong> %s</div>', get_class($exception));
+        $html = sprintf('<div><strong>Type:</strong> %s</div>', $exception::class);
 
         if (($code = $exception->getCode())) {
             $html .= sprintf('<div><strong>Code:</strong> %s</div>', $code);
@@ -152,7 +139,6 @@ class Error extends AbstractError
     /**
      * Render JSON error
      *
-     * @param Exception $exception
      *
      * @return string
      */
@@ -167,7 +153,7 @@ class Error extends AbstractError
 
             do {
                 $error['exception'][] = [
-                    'type' => get_class($exception),
+                    'type' => $exception::class,
                     'code' => $exception->getCode(),
                     'message' => $exception->getMessage(),
                     'file' => $exception->getFile(),
@@ -183,7 +169,6 @@ class Error extends AbstractError
     /**
      * Render XML error
      *
-     * @param Exception $exception
      *
      * @return string
      */
@@ -193,7 +178,7 @@ class Error extends AbstractError
         if ($this->displayErrorDetails) {
             do {
                 $xml .= "  <exception>\n";
-                $xml .= "    <type>" . get_class($exception) . "</type>\n";
+                $xml .= "    <type>" . $exception::class . "</type>\n";
                 $xml .= "    <code>" . $exception->getCode() . "</code>\n";
                 $xml .= "    <message>" . $this->createCdataSection($exception->getMessage()) . "</message>\n";
                 $xml .= "    <file>" . $exception->getFile() . "</file>\n";

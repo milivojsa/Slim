@@ -35,19 +35,14 @@ abstract class Routable
     protected $middleware = [];
 
     /**
-     * Route pattern
-     *
-     * @var string
-     */
-    protected $pattern;
-
-    /**
      * @param string   $pattern
      * @param callable $callable
      */
-    public function __construct($pattern, $callable)
+    public function __construct(/**
+     * Route pattern
+     */
+    protected $pattern, $callable)
     {
-        $this->pattern = $pattern;
         $this->callable = $callable;
     }
 
@@ -74,7 +69,6 @@ abstract class Routable
     /**
      * Set container for use with resolveCallable
      *
-     * @param ContainerInterface $container
      *
      * @return static
      */

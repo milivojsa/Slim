@@ -42,9 +42,6 @@ class Cookies implements CookiesInterface
         'samesite' => null
     ];
 
-    /**
-     * @param array $cookies
-     */
     public function __construct(array $cookies = [])
     {
         $this->requestCookies = $cookies;
@@ -52,8 +49,6 @@ class Cookies implements CookiesInterface
 
     /**
      * Set default cookie properties
-     *
-     * @param array $settings
      */
     public function setDefaults(array $settings)
     {
@@ -65,7 +60,7 @@ class Cookies implements CookiesInterface
      */
     public function get($name, $default = null)
     {
-        return isset($this->requestCookies[$name]) ? $this->requestCookies[$name] : $default;
+        return $this->requestCookies[$name] ?? $default;
     }
 
     /**
@@ -102,7 +97,7 @@ class Cookies implements CookiesInterface
      */
     protected function toHeader($name, array $properties)
     {
-        $result = urlencode($name) . '=' . urlencode($properties['value']);
+        $result = urlencode($name) . '=' . urlencode((string) $properties['value']);
 
         if (isset($properties['domain'])) {
             $result .= '; domain=' . $properties['domain'];
@@ -136,7 +131,7 @@ class Cookies implements CookiesInterface
         }
 
         if (isset($properties['samesite'])
-            && in_array(strtolower($properties['samesite']), ['lax', 'strict', 'none'], true)) {
+            && in_array(strtolower((string) $properties['samesite']), ['lax', 'strict', 'none'], true)) {
             // While strtolower is needed for correct comparison, the RFC doesn't care about case
             $result .= '; SameSite=' . $properties['samesite'];
         }
@@ -150,7 +145,7 @@ class Cookies implements CookiesInterface
     public static function parseHeader($header)
     {
         if (is_array($header) === true) {
-            $header = isset($header[0]) ? $header[0] : '';
+            $header = $header[0] ?? '';
         }
 
         if (is_string($header) === false) {

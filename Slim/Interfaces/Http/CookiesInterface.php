@@ -19,7 +19,7 @@ interface CookiesInterface
      *
      * @return mixed Cookie value if present, else default
      */
-    public function get($name, $default = null);
+    public function get($name, mixed $default = null);
 
     /**
      * Set response cookie

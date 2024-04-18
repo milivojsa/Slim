@@ -933,9 +933,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $body->write('{"foo":"bar"}');
         $request = new Request($method, $uri, $headers, $cookies, $serverParams, $body);
 
-        $request->registerMediaTypeParser('application/vnd.api+json', function ($input) {
-            return ['data' => $input];
-        });
+        $request->registerMediaTypeParser('application/vnd.api+json', fn($input) => ['data' => $input]);
 
         $this->assertEquals(['data' => '{"foo":"bar"}'], $request->getParsedBody());
     }

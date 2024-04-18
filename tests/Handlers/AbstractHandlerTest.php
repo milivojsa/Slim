@@ -15,7 +15,7 @@ class AbstractHandlerTest extends PHPUnit_Framework_TestCase
 {
     public function testHalfValidContentType()
     {
-        $req = $this->getMockBuilder('Slim\Http\Request')->disableOriginalConstructor()->getMock();
+        $req = $this->getMockBuilder(\Slim\Http\Request::class)->disableOriginalConstructor()->getMock();
 
         $req->expects($this->any())->method('getHeaderLine')->will($this->returnValue('unknown/+json'));
 
@@ -47,7 +47,7 @@ class AbstractHandlerTest extends PHPUnit_Framework_TestCase
      */
     public function testAcceptableMediaTypeIsNotFirstInList()
     {
-        $request = $this->getMockBuilder('Slim\Http\Request')
+        $request = $this->getMockBuilder(\Slim\Http\Request::class)
             ->disableOriginalConstructor()
             ->getMock();
 

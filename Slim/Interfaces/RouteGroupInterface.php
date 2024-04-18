@@ -32,8 +32,6 @@ interface RouteGroupInterface
      *
      * This method invokes the route group object's callable, collecting
      * nested route objects
-     *
-     * @param App $app
      */
     public function __invoke(App $app);
 }

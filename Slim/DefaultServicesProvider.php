@@ -37,9 +37,7 @@ class DefaultServicesProvider
              *
              * @return Environment
              */
-            $container['environment'] = function () {
-                return new Environment($_SERVER);
-            };
+            $container['environment'] = fn() => new Environment($_SERVER);
         }
 
         if (!isset($container['request'])) {
@@ -50,9 +48,7 @@ class DefaultServicesProvider
              *
              * @return ServerRequestInterface
              */
-            $container['request'] = function ($container) {
-                return Request::createFromEnvironment($container->get('environment'));
-            };
+            $container['request'] = fn($container) => Request::createFromEnvironment($container->get('environment'));
         }
 
         if (!isset($container['response'])) {
@@ -100,9 +96,7 @@ class DefaultServicesProvider
              *
              * @return InvocationStrategyInterface
              */
-            $container['foundHandler'] = function () {
-                return new RequestResponse;
-            };
+            $container['foundHandler'] = fn() => new RequestResponse;
         }
 
         if (!isset($container['phpErrorHandler'])) {
@@ -119,9 +113,7 @@ class DefaultServicesProvider
              *
              * @return callable
              */
-            $container['phpErrorHandler'] = function ($container) {
-                return new PhpError($container->get('settings')['displayErrorDetails']);
-            };
+            $container['phpErrorHandler'] = fn($container) => new PhpError($container->get('settings')['displayErrorDetails']);
         }
 
         if (!isset($container['errorHandler'])) {
@@ -138,11 +130,9 @@ class DefaultServicesProvider
              *
              * @return callable
              */
-            $container['errorHandler'] = function ($container) {
-                return new Error(
-                    $container->get('settings')['displayErrorDetails']
-                );
-            };
+            $container['errorHandler'] = fn($container) => new Error(
+                $container->get('settings')['displayErrorDetails']
+            );
         }
 
         if (!isset($container['notFoundHandler'])) {
@@ -156,9 +146,7 @@ class DefaultServicesProvider
              *
              * @return callable
              */
-            $container['notFoundHandler'] = function () {
-                return new NotFound;
-            };
+            $container['notFoundHandler'] = fn() => new NotFound;
         }
 
         if (!isset($container['notAllowedHandler'])) {
@@ -173,9 +161,7 @@ class DefaultServicesProvider
              *
              * @return callable
              */
-            $container['notAllowedHandler'] = function () {
-                return new NotAllowed;
-            };
+            $container['notAllowedHandler'] = fn() => new NotAllowed;
         }
 
         if (!isset($container['callableResolver'])) {
@@ -186,9 +172,7 @@ class DefaultServicesProvider
              *
              * @return CallableResolverInterface
              */
-            $container['callableResolver'] = function ($container) {
-                return new CallableResolver($container);
-            };
+            $container['callableResolver'] = fn($container) => new CallableResolver($container);
         }
     }
 }

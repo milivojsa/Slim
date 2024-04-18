@@ -30,7 +30,6 @@ abstract class AbstractHandler
      * Slim's error handling requirements. Consider a fully-feature solution such
      * as willdurand/negotiation for any other situation.
      *
-     * @param ServerRequestInterface $request
      *
      * @return string
      */

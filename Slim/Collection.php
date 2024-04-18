@@ -132,7 +132,7 @@ class Collection implements CollectionInterface
      * @param string $key   The data key
      * @param mixed  $value The data value
      */
-    public function offsetSet($key, $value)
+    public function offsetSet($key, mixed $value)
     {
         $this->set($key, $value);
     }

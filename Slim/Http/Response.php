@@ -24,7 +24,7 @@ use Slim\Interfaces\Http\HeadersInterface;
  * @link https://github.com/php-fig/http-message/blob/master/src/MessageInterface.php
  * @link https://github.com/php-fig/http-message/blob/master/src/ResponseInterface.php
  */
-class Response extends Message implements ResponseInterface
+class Response extends Message implements ResponseInterface, \Stringable
 {
     /**
      * Status code
@@ -122,7 +122,7 @@ class Response extends Message implements ResponseInterface
      *
      * @var string
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * @param int                   $status  The response status code.
@@ -135,8 +135,8 @@ class Response extends Message implements ResponseInterface
         StreamInterface $body = null
     ) {
         $this->status = $this->filterStatus($status);
-        $this->headers = $headers ? $headers : new Headers();
-        $this->body = $body ? $body : new Body(fopen('php://temp', 'r+'));
+        $this->headers = $headers ?: new Headers();
+        $this->body = $body ?: new Body(fopen('php://temp', 'r+'));
     }
 
     /**
@@ -249,10 +249,7 @@ class Response extends Message implements ResponseInterface
         if ($this->reasonPhrase) {
             return $this->reasonPhrase;
         }
-        if (isset(static::$messages[$this->status])) {
-            return static::$messages[$this->status];
-        }
-        return '';
+        return static::$messages[$this->status] ?? '';
     }
 
     /**
@@ -346,7 +343,7 @@ class Response extends Message implements ResponseInterface
      *
      * @throws RuntimeException
      */
-    public function withJson($data, $status = null, $encodingOptions = 0)
+    public function withJson(mixed $data, $status = null, $encodingOptions = 0)
     {
         $response = $this->withBody(new Body(fopen('php://temp', 'r+')));
         $response->body->write($json = json_encode($data, $encodingOptions));
@@ -517,7 +514,7 @@ class Response extends Message implements ResponseInterface
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $output = sprintf(
             'HTTP/%s %s %s',

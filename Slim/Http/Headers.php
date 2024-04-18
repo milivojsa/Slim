@@ -50,7 +50,7 @@ class Headers extends Collection implements HeadersInterface
         $environment = self::determineAuthorization($environment);
         foreach ($environment as $key => $value) {
             $key = strtoupper($key);
-            if (isset(static::$special[$key]) || strpos($key, 'HTTP_') === 0) {
+            if (isset(static::$special[$key]) || str_starts_with($key, 'HTTP_')) {
                 if ($key !== 'HTTP_CONTENT_LENGTH') {
                     $data[$key] =  $value;
                 }
@@ -150,7 +150,7 @@ class Headers extends Collection implements HeadersInterface
      *
      * @return string
      */
-    public function getOriginalKey($key, $default = null)
+    public function getOriginalKey($key, mixed $default = null)
     {
         if ($this->has($key)) {
             return parent::get($this->normalizeKey($key))['originalKey'];
@@ -197,7 +197,7 @@ class Headers extends Collection implements HeadersInterface
     public function normalizeKey($key)
     {
         $key = strtr(strtolower($key), '_', '-');
-        if (strpos($key, 'http-') === 0) {
+        if (str_starts_with($key, 'http-')) {
             $key = substr($key, 5);
         }
 

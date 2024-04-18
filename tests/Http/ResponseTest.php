@@ -22,8 +22,8 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         $response = new Response();
 
         $this->assertAttributeEquals(200, 'status', $response);
-        $this->assertAttributeInstanceOf('\Slim\Http\Headers', 'headers', $response);
-        $this->assertAttributeInstanceOf('\Psr\Http\Message\StreamInterface', 'body', $response);
+        $this->assertAttributeInstanceOf(\Slim\Http\Headers::class, 'headers', $response);
+        $this->assertAttributeInstanceOf(\Psr\Http\Message\StreamInterface::class, 'body', $response);
     }
 
     public function testConstructorWithCustomArgs()

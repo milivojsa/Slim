@@ -59,7 +59,7 @@ class CallableResolverTest extends PHPUnit_Framework_TestCase
     {
         $obj = new CallableTest();
         $resolver = new CallableResolver($this->container);
-        $callable = $resolver->resolve([$obj, 'toCall']);
+        $callable = $resolver->resolve($obj->toCall(...));
         $callable();
         $this->assertEquals(1, CallableTest::$CalledCount);
     }
@@ -90,9 +90,7 @@ class CallableResolverTest extends PHPUnit_Framework_TestCase
 
     public function testResolutionToAnInvokableClassInContainer()
     {
-        $this->container['an_invokable'] = function ($c) {
-            return new InvokableTest();
-        };
+        $this->container['an_invokable'] = fn($c) => new InvokableTest();
         $resolver = new CallableResolver($this->container);
         $callable = $resolver->resolve('an_invokable');
         $callable();
@@ -102,7 +100,7 @@ class CallableResolverTest extends PHPUnit_Framework_TestCase
     public function testResolutionToAnInvokableClass()
     {
         $resolver = new CallableResolver($this->container);
-        $callable = $resolver->resolve('Slim\Tests\Mocks\InvokableTest');
+        $callable = $resolver->resolve(\Slim\Tests\Mocks\InvokableTest::class);
         $callable();
         $this->assertEquals(1, InvokableTest::$CalledCount);
     }

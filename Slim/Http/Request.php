@@ -187,7 +187,7 @@ class Request extends Message implements ServerRequestInterface
         $this->uploadedFiles = $uploadedFiles;
 
         if (isset($serverParams['SERVER_PROTOCOL'])) {
-            $this->protocolVersion = str_replace('HTTP/', '', $serverParams['SERVER_PROTOCOL']);
+            $this->protocolVersion = str_replace('HTTP/', '', (string) $serverParams['SERVER_PROTOCOL']);
         }
 
         if (!$this->headers->has('Host') && $this->uri->getHost() !== '') {
@@ -337,7 +337,7 @@ class Request extends Message implements ServerRequestInterface
         if (!is_string($method)) {
             throw new InvalidArgumentException(sprintf(
                 'Unsupported HTTP method; must be a string, received %s',
-                (is_object($method) ? get_class($method) : gettype($method))
+                (get_debug_type($method))
             ));
         }
 
@@ -666,11 +666,8 @@ class Request extends Message implements ServerRequestInterface
     public function getContentCharset()
     {
         $mediaTypeParams = $this->getMediaTypeParams();
-        if (isset($mediaTypeParams['charset'])) {
-            return $mediaTypeParams['charset'];
-        }
 
-        return null;
+        return $mediaTypeParams['charset'] ?? null;
     }
 
     /**
@@ -711,7 +708,7 @@ class Request extends Message implements ServerRequestInterface
      *
      * @return mixed
      */
-    public function getCookieParam($key, $default = null)
+    public function getCookieParam($key, mixed $default = null)
     {
         $cookies = $this->getCookieParams();
         $result = $default;
@@ -863,15 +860,14 @@ class Request extends Message implements ServerRequestInterface
      * Note: This method is not part of the PSR-7 standard.
      *
      * @param  string $key
-     * @param  mixed  $default
      *
      * @return mixed
      */
-    public function getServerParam($key, $default = null)
+    public function getServerParam($key, mixed $default = null)
     {
         $serverParams = $this->getServerParams();
 
-        return isset($serverParams[$key]) ? $serverParams[$key] : $default;
+        return $serverParams[$key] ?? $default;
     }
 
     /**
@@ -1016,7 +1012,7 @@ class Request extends Message implements ServerRequestInterface
         // Check if this specific media type has a parser registered first
         if (!isset($this->bodyParsers[$mediaType])) {
             // If not, look for a media type with a structured syntax suffix (RFC 6839)
-            $parts = explode('+', $mediaType);
+            $parts = explode('+', (string) $mediaType);
             if (count($parts) >= 2) {
                 $mediaType = 'application/' . $parts[count($parts)-1];
             }
@@ -1119,7 +1115,7 @@ class Request extends Message implements ServerRequestInterface
      *
      * @return mixed
      */
-    public function getParam($key, $default = null)
+    public function getParam($key, mixed $default = null)
     {
         $postParams = $this->getParsedBody();
         $getParams = $this->getQueryParams();
@@ -1141,11 +1137,10 @@ class Request extends Message implements ServerRequestInterface
      * Note: This method is not part of the PSR-7 standard.
      *
      * @param string $key
-     * @param mixed  $default
      *
      * @return mixed
      */
-    public function getParsedBodyParam($key, $default = null)
+    public function getParsedBodyParam($key, mixed $default = null)
     {
         $postParams = $this->getParsedBody();
         $result = $default;
@@ -1164,11 +1159,10 @@ class Request extends Message implements ServerRequestInterface
      * Note: This method is not part of the PSR-7 standard.
      *
      * @param string $key
-     * @param mixed  $default
      *
      * @return mixed
      */
-    public function getQueryParam($key, $default = null)
+    public function getQueryParam($key, mixed $default = null)
     {
         $getParams = $this->getQueryParams();
         $result = $default;

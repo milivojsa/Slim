@@ -27,22 +27,12 @@ class PhpError extends AbstractError
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, Throwable $error)
     {
         $contentType = $this->determineContentType($request);
-        switch ($contentType) {
-            case 'application/json':
-                $output = $this->renderJsonErrorMessage($error);
-                break;
-
-            case 'text/xml':
-            case 'application/xml':
-                $output = $this->renderXmlErrorMessage($error);
-                break;
-
-            case 'text/html':
-                $output = $this->renderHtmlErrorMessage($error);
-                break;
-            default:
-                throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
-        }
+        $output = match ($contentType) {
+            'application/json' => $this->renderJsonErrorMessage($error),
+            'text/xml', 'application/xml' => $this->renderXmlErrorMessage($error),
+            'text/html' => $this->renderHtmlErrorMessage($error),
+            default => throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType),
+        };
 
         $this->writeToErrorLog($error);
 
@@ -58,7 +48,6 @@ class PhpError extends AbstractError
     /**
      * Render HTML error page
      *
-     * @param Throwable $error
      *
      * @return string
      */
@@ -95,13 +84,12 @@ class PhpError extends AbstractError
     /**
      * Render error as HTML.
      *
-     * @param Throwable $error
      *
      * @return string
      */
     protected function renderHtmlError(Throwable $error)
     {
-        $html = sprintf('<div><strong>Type:</strong> %s</div>', get_class($error));
+        $html = sprintf('<div><strong>Type:</strong> %s</div>', $error::class);
 
         if (($code = $error->getCode())) {
             $html .= sprintf('<div><strong>Code:</strong> %s</div>', $code);
@@ -130,7 +118,6 @@ class PhpError extends AbstractError
     /**
      * Render JSON error
      *
-     * @param Throwable $error
      *
      * @return string
      */
@@ -145,7 +132,7 @@ class PhpError extends AbstractError
 
             do {
                 $json['error'][] = [
-                    'type' => get_class($error),
+                    'type' => $error::class,
                     'code' => $error->getCode(),
                     'message' => $error->getMessage(),
                     'file' => $error->getFile(),
@@ -161,7 +148,6 @@ class PhpError extends AbstractError
     /**
      * Render XML error
      *
-     * @param Throwable $error
      *
      * @return string
      */
@@ -171,7 +157,7 @@ class PhpError extends AbstractError
         if ($this->displayErrorDetails) {
             do {
                 $xml .= "  <error>\n";
-                $xml .= "    <type>" . get_class($error) . "</type>\n";
+                $xml .= "    <type>" . $error::class . "</type>\n";
                 $xml .= "    <code>" . $error->getCode() . "</code>\n";
                 $xml .= "    <message>" . $this->createCdataSection($error->getMessage()) . "</message>\n";
                 $xml .= "    <file>" . $error->getFile() . "</file>\n";

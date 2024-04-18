@@ -21,50 +21,6 @@ use RuntimeException;
 class UploadedFile implements UploadedFileInterface
 {
     /**
-     * The client-provided full path to the file
-     *
-     * @note this is public to maintain BC with 3.1.0 and earlier.
-     *
-     * @var string
-     */
-    public $file;
-
-    /**
-     * The client-provided file name.
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * The client-provided media type of the file.
-     *
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * The size of the file in bytes.
-     *
-     * @var int
-     */
-    protected $size;
-
-    /**
-     * A valid PHP UPLOAD_ERR_xxx code for the file upload.
-     *
-     * @var int
-     */
-    protected $error = UPLOAD_ERR_OK;
-
-    /**
-     * Indicates if the upload is from a SAPI environment.
-     *
-     * @var bool
-     */
-    protected $sapi = false;
-
-    /**
      * An optional StreamInterface wrapping the file resource.
      *
      * @var StreamInterface
@@ -122,9 +78,9 @@ class UploadedFile implements UploadedFileInterface
             if (!is_array($uploadedFile['error'])) {
                 $parsed[$field] = new static(
                     $uploadedFile['tmp_name'],
-                    isset($uploadedFile['name']) ? $uploadedFile['name'] : null,
-                    isset($uploadedFile['type']) ? $uploadedFile['type'] : null,
-                    isset($uploadedFile['size']) ? $uploadedFile['size'] : null,
+                    $uploadedFile['name'] ?? null,
+                    $uploadedFile['type'] ?? null,
+                    $uploadedFile['size'] ?? null,
                     $uploadedFile['error'],
                     true
                 );
@@ -154,14 +110,35 @@ class UploadedFile implements UploadedFileInterface
      * @param int         $error The UPLOAD_ERR_XXX code representing the status of the upload.
      * @param bool        $sapi Indicates if the upload is in a SAPI environment.
      */
-    public function __construct($file, $name = null, $type = null, $size = null, $error = UPLOAD_ERR_OK, $sapi = false)
+    public function __construct(
+        /**
+         * The client-provided full path to the file
+         *
+         * @note this is public to maintain BC with 3.1.0 and earlier.
+         */
+        public $file,
+        /**
+         * The client-provided file name.
+         */
+        protected $name = null,
+        /**
+         * The client-provided media type of the file.
+         */
+        protected $type = null,
+        /**
+         * The size of the file in bytes.
+         */
+        protected $size = null,
+        /**
+         * A valid PHP UPLOAD_ERR_xxx code for the file upload.
+         */
+        protected $error = UPLOAD_ERR_OK,
+        /**
+         * Indicates if the upload is from a SAPI environment.
+         */
+        protected $sapi = false
+    )
     {
-        $this->file = $file;
-        $this->name = $name;
-        $this->type = $type;
-        $this->size = $size;
-        $this->error = $error;
-        $this->sapi = $sapi;
     }
 
     /**

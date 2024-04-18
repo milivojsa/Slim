@@ -47,7 +47,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         };
         $route = $this->router->map($methods, $pattern, $callable);
 
-        $this->assertInstanceOf('\Slim\Interfaces\RouteInterface', $route);
+        $this->assertInstanceOf(\Slim\Interfaces\RouteInterface::class, $route);
         $this->assertAttributeContains($route, 'routes', $this->router);
     }
 
@@ -144,9 +144,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     {
         $methods = ['GET'];
         $pattern = '/archive/{year}[/{month:[\d:{2}]}[/d/{day}]]';
-        $callable = function ($request, $response, $args) {
-            return $response;
-        };
+        $callable = fn($request, $response, $args) => $response;
         $route = $this->router->map($methods, $pattern, $callable);
         $route->setName('foo');
 
@@ -241,7 +239,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $class = new ReflectionClass($this->router);
         $method = $class->getMethod('createDispatcher');
         $method->setAccessible(true);
-        $this->assertInstanceOf('\FastRoute\Dispatcher', $method->invoke($this->router));
+        $this->assertInstanceOf(\FastRoute\Dispatcher::class, $method->invoke($this->router));
     }
 
     public function testSetDispatcher()
@@ -253,7 +251,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $class = new ReflectionClass($this->router);
         $prop = $class->getProperty('dispatcher');
         $prop->setAccessible(true);
-        $this->assertInstanceOf('\FastRoute\Dispatcher', $prop->getValue($this->router));
+        $this->assertInstanceOf(\FastRoute\Dispatcher::class, $prop->getValue($this->router));
     }
 
     /**
@@ -395,14 +393,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         };
         $route = $this->router->map($methods, $pattern, $callable)->setName('foo');
 
-        $cacheFile = dirname(__FILE__) . '/' . uniqid(microtime(true));
+        $cacheFile = __DIR__ . '/' . uniqid(microtime(true));
         $this->router->setCacheFile($cacheFile);
         $class = new ReflectionClass($this->router);
         $method = $class->getMethod('createDispatcher');
         $method->setAccessible(true);
 
         $dispatcher = $method->invoke($this->router);
-        $this->assertInstanceOf('\FastRoute\Dispatcher', $dispatcher);
+        $this->assertInstanceOf(\FastRoute\Dispatcher::class, $dispatcher);
         $this->assertFileExists($cacheFile, 'cache file was not created');
 
         // instantiate a new router & load the cached routes file & see if

@@ -19,7 +19,7 @@ interface CollectionInterface extends ArrayAccess, Countable, IteratorAggregate
      * @param string $key   The data key
      * @param mixed  $value The data value
      */
-    public function set($key, $value);
+    public function set($key, mixed $value);
 
     /**
      * Get collection item for key
@@ -29,7 +29,7 @@ interface CollectionInterface extends ArrayAccess, Countable, IteratorAggregate
      *
      * @return mixed The key's value, or the default value
      */
-    public function get($key, $default = null);
+    public function get($key, mixed $default = null);
 
     /**
      * Add item to collection, replacing existing items with the same data key

@@ -29,23 +29,12 @@ class NotFound extends AbstractHandler
             $output = $this->renderPlainNotFoundOutput();
         } else {
             $contentType = $this->determineContentType($request);
-            switch ($contentType) {
-                case 'application/json':
-                    $output = $this->renderJsonNotFoundOutput();
-                    break;
-
-                case 'text/xml':
-                case 'application/xml':
-                    $output = $this->renderXmlNotFoundOutput();
-                    break;
-
-                case 'text/html':
-                    $output = $this->renderHtmlNotFoundOutput($request);
-                    break;
-
-                default:
-                    throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
-            }
+            $output = match ($contentType) {
+                'application/json' => $this->renderJsonNotFoundOutput(),
+                'text/xml', 'application/xml' => $this->renderXmlNotFoundOutput(),
+                'text/html' => $this->renderHtmlNotFoundOutput($request),
+                default => throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType),
+            };
         }
 
         $body = new Body(fopen('php://temp', 'r+'));

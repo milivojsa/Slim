@@ -174,7 +174,7 @@ class MessageTest extends PHPUnit_Framework_TestCase
     protected function getBody()
     {
         return $this
-            ->getMockBuilder('Slim\Http\Body')
+            ->getMockBuilder(\Slim\Http\Body::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

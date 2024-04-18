@@ -40,27 +40,6 @@ class Uri implements UriInterface
     protected $scheme = '';
 
     /**
-     * Uri user
-     *
-     * @var string
-     */
-    protected $user = '';
-
-    /**
-     * Uri password
-     *
-     * @var string
-     */
-    protected $password = '';
-
-    /**
-     * Uri host
-     *
-     * @var string
-     */
-    protected $host = '';
-
-    /**
      * Uri port number
      *
      * @var null|int
@@ -107,22 +86,28 @@ class Uri implements UriInterface
      */
     public function __construct(
         $scheme,
-        $host,
+        /**
+         * Uri host
+         */
+        protected $host,
         $port = null,
         $path = '/',
         $query = '',
         $fragment = '',
-        $user = '',
-        $password = ''
+        /**
+         * Uri user
+         */
+        protected $user = '',
+        /**
+         * Uri password
+         */
+        protected $password = ''
     ) {
         $this->scheme = $this->filterScheme($scheme);
-        $this->host = $host;
         $this->port = $this->filterPort($port);
         $this->path = ($path === null || !strlen($path)) ? '/' : $this->filterPath($path);
         $this->query = $this->filterQuery($query);
         $this->fragment = $this->filterQuery($fragment);
-        $this->user = $user;
-        $this->password = $password;
     }
 
     /**
@@ -139,14 +124,14 @@ class Uri implements UriInterface
         }
 
         $parts = parse_url($uri);
-        $scheme = isset($parts['scheme']) ? $parts['scheme'] : '';
-        $user = isset($parts['user']) ? $parts['user'] : '';
-        $pass = isset($parts['pass']) ? $parts['pass'] : '';
-        $host = isset($parts['host']) ? $parts['host'] : '';
-        $port = isset($parts['port']) ? $parts['port'] : null;
-        $path = isset($parts['path']) ? $parts['path'] : '';
-        $query = isset($parts['query']) ? $parts['query'] : '';
-        $fragment = isset($parts['fragment']) ? $parts['fragment'] : '';
+        $scheme = $parts['scheme'] ?? '';
+        $user = $parts['user'] ?? '';
+        $pass = $parts['pass'] ?? '';
+        $host = $parts['host'] ?? '';
+        $port = $parts['port'] ?? null;
+        $path = $parts['path'] ?? '';
+        $query = $parts['query'] ?? '';
+        $fragment = $parts['fragment'] ?? '';
 
         return new static($scheme, $host, $port, $path, $query, $fragment, $user, $pass);
     }
@@ -154,7 +139,6 @@ class Uri implements UriInterface
     /**
      * Create new Uri from environment.
      *
-     * @param Environment $env
      *
      * @return self
      */
@@ -179,22 +163,22 @@ class Uri implements UriInterface
             $port = (int)$env->get('SERVER_PORT', 80);
         }
 
-        if (preg_match('/^(\[[a-fA-F0-9:.]+\])(:\d+)?\z/', $host, $matches)) {
+        if (preg_match('/^(\[[a-fA-F0-9:.]+\])(:\d+)?\z/', (string) $host, $matches)) {
             $host = $matches[1];
 
             if (isset($matches[2])) {
                 $port = (int) substr($matches[2], 1);
             }
         } else {
-            $pos = strpos($host, ':');
+            $pos = strpos((string) $host, ':');
             if ($pos !== false) {
-                $port = (int) substr($host, $pos + 1);
-                $host = strstr($host, ':', true);
+                $port = (int) substr((string) $host, $pos + 1);
+                $host = strstr((string) $host, ':', true);
             }
         }
 
         // Path
-        $requestScriptName = (string) parse_url($env->get('SCRIPT_NAME'), PHP_URL_PATH);
+        $requestScriptName = (string) parse_url((string) $env->get('SCRIPT_NAME'), PHP_URL_PATH);
         $requestScriptDir = dirname($requestScriptName);
 
         // parse_url() requires a full URL. As we don't extract the domain name or scheme,
@@ -393,9 +377,7 @@ class Uri implements UriInterface
     {
         return preg_replace_callback(
             '/(?:[^a-zA-Z0-9_\-\.~!\$&\'\(\)\*\+,;=]+|%(?![A-Fa-f0-9]{2}))/u',
-            function ($match) {
-                return rawurlencode($match[0]);
-            },
+            fn($match) => rawurlencode((string) $match[0]),
             $query
         );
     }
@@ -574,7 +556,7 @@ class Uri implements UriInterface
         $clone->path = $this->filterPath($path);
 
         // if the path is absolute, then clear basePath
-        if (substr($path, 0, 1) == '/') {
+        if (str_starts_with($path, '/')) {
             $clone->basePath = '';
         }
 
@@ -642,9 +624,7 @@ class Uri implements UriInterface
     {
         return preg_replace_callback(
             '/(?:[^a-zA-Z0-9_\-\.~:@&=\+\$,\/;%]+|%(?![A-Fa-f0-9]{2}))/',
-            function ($match) {
-                return rawurlencode($match[0]);
-            },
+            fn($match) => rawurlencode((string) $match[0]),
             $path
         );
     }
@@ -715,9 +695,7 @@ class Uri implements UriInterface
     {
         return preg_replace_callback(
             '/(?:[^a-zA-Z0-9_\-\.~!\$&\'\(\)\*\+,;=%:@\/\?]+|%(?![A-Fa-f0-9]{2}))/',
-            function ($match) {
-                return rawurlencode($match[0]);
-            },
+            fn($match) => rawurlencode((string) $match[0]),
             $query
         );
     }
@@ -795,7 +773,7 @@ class Uri implements UriInterface
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $scheme = $this->getScheme();
         $authority = $this->getAuthority();
@@ -828,7 +806,7 @@ class Uri implements UriInterface
         $authority = $this->getAuthority();
         $basePath = $this->getBasePath();
 
-        if ($authority !== '' && substr($basePath, 0, 1) !== '/') {
+        if ($authority !== '' && !str_starts_with($basePath, '/')) {
             $basePath = $basePath . '/' . $basePath;
         }
 

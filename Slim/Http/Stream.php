@@ -23,7 +23,7 @@ class Stream implements StreamInterface
      *
      * This is octal as per header stat.h
      */
-    const FSTAT_MODE_S_IFIFO = 0010000;
+    public const FSTAT_MODE_S_IFIFO = 0010000;
 
     /**
      * Resource modes
@@ -115,7 +115,7 @@ class Stream implements StreamInterface
             return $this->meta;
         }
 
-        return isset($this->meta[$key]) ? $this->meta[$key] : null;
+        return $this->meta[$key] ?? null;
     }
 
     /**
@@ -188,7 +188,7 @@ class Stream implements StreamInterface
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if (!$this->isAttached()) {
             return '';
@@ -197,7 +197,7 @@ class Stream implements StreamInterface
         try {
             $this->rewind();
             return $this->getContents();
-        } catch (RuntimeException $e) {
+        } catch (RuntimeException) {
             return '';
         }
     }
@@ -274,7 +274,7 @@ class Stream implements StreamInterface
                 if ($this->isAttached()) {
                     $meta = $this->getMetadata();
                     foreach (self::$modes['readable'] as $mode) {
-                        if (strpos($meta['mode'], $mode) === 0) {
+                        if (str_starts_with((string) $meta['mode'], (string) $mode)) {
                             $this->readable = true;
                             break;
                         }
@@ -298,7 +298,7 @@ class Stream implements StreamInterface
             if ($this->isAttached()) {
                 $meta = $this->getMetadata();
                 foreach (self::$modes['writable'] as $mode) {
-                    if (strpos($meta['mode'], $mode) === 0) {
+                    if (str_starts_with((string) $meta['mode'], (string) $mode)) {
                         $this->writable = true;
                         break;
                     }

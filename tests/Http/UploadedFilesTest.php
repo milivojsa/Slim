@@ -125,7 +125,6 @@ class UploadedFilesTest extends PHPUnit_Framework_TestCase
     /**
      * @depends testConstructor
      *
-     * @param UploadedFile $uploadedFile
      *
      * @return UploadedFile
      */
@@ -140,8 +139,6 @@ class UploadedFilesTest extends PHPUnit_Framework_TestCase
 
     /**
      * @depends testConstructor
-     *
-     * @param UploadedFile $uploadedFile
      */
     public function testMoveToNotWritable(UploadedFile $uploadedFile)
     {
@@ -154,7 +151,6 @@ class UploadedFilesTest extends PHPUnit_Framework_TestCase
     /**
      * @depends testConstructor
      *
-     * @param UploadedFile $uploadedFile
      *
      * @return UploadedFile
      */
@@ -174,7 +170,6 @@ class UploadedFilesTest extends PHPUnit_Framework_TestCase
     /**
      * @depends testMoveTo
      *
-     * @param UploadedFile $uploadedFile
      *
      * @expectedException RuntimeException
      */
@@ -193,8 +188,6 @@ class UploadedFilesTest extends PHPUnit_Framework_TestCase
      * This test must run after testMoveTo
      *
      * @depends testConstructor
-     *
-     * @param UploadedFile $uploadedFile
      */
     public function testMoveToAgain(UploadedFile $uploadedFile)
     {

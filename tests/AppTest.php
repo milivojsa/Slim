@@ -89,7 +89,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $route = $app->get($path, $callable);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
     }
 
@@ -102,7 +102,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $route = $app->post($path, $callable);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('POST', 'methods', $route);
     }
 
@@ -115,7 +115,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $route = $app->put($path, $callable);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('PUT', 'methods', $route);
     }
 
@@ -128,7 +128,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $route = $app->patch($path, $callable);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('PATCH', 'methods', $route);
     }
 
@@ -141,7 +141,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $route = $app->delete($path, $callable);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('DELETE', 'methods', $route);
     }
 
@@ -154,7 +154,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $route = $app->options($path, $callable);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('OPTIONS', 'methods', $route);
     }
 
@@ -167,7 +167,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $route = $app->any($path, $callable);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
         $this->assertAttributeContains('PUT', 'methods', $route);
@@ -185,7 +185,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $route = $app->map(['GET', 'POST'], $path, $callable);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
     }
@@ -196,12 +196,12 @@ class AppTest extends PHPUnit_Framework_TestCase
         $destination = '/bar';
 
         $app = new App();
-        $request = $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')
+        $request = $this->getMockBuilder(\Psr\Http\Message\ServerRequestInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $route = $app->redirect($source, $destination, 301);
 
-        $this->assertInstanceOf('\Slim\Route', $route);
+        $this->assertInstanceOf(\Slim\Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
 
         $response = $route->run($request, new Response());
@@ -802,8 +802,8 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app->add($mw);
 
         $app->callMiddlewareStack(
-            $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder('Psr\Http\Message\ResponseInterface')->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(\Psr\Http\Message\ServerRequestInterface::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(\Psr\Http\Message\ResponseInterface::class)->disableOriginalConstructor()->getMock()
         );
 
         $this->assertEquals($app, $bottom);
@@ -821,8 +821,8 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app->add($mw);
 
         $app->callMiddlewareStack(
-            $this->getMockBuilder('Psr\Http\Message\ServerRequestInterface')->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder('Psr\Http\Message\ResponseInterface')->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(\Psr\Http\Message\ServerRequestInterface::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(\Psr\Http\Message\ResponseInterface::class)->disableOriginalConstructor()->getMock()
         );
 
         $this->assertSame($called, 1);
@@ -832,9 +832,7 @@ class AppTest extends PHPUnit_Framework_TestCase
     {
         $app = new App();
 
-        $app->get('/', function ($req, $res) {
-            return $res->write('Center');
-        })->add(function ($req, $res, $next) {
+        $app->get('/', fn($req, $res) => $res->write('Center'))->add(function ($req, $res, $next) {
             $res->write('In1');
             $res = $next($req, $res);
             $res->write('Out1');
@@ -873,9 +871,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
 
         $app->group('/foo', function ($app) {
-            $app->get('/', function ($req, $res) {
-                return $res->write('Center');
-            });
+            $app->get('/', fn($req, $res) => $res->write('Center'));
         })->add(function ($req, $res, $next) {
             $res->write('In1');
             $res = $next($req, $res);
@@ -916,9 +912,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app->group('/foo', function ($app) {
             $app->group('/baz', function ($app) {
-                $app->get('/', function ($req, $res) {
-                    return $res->write('Center');
-                });
+                $app->get('/', fn($req, $res) => $res->write('Center'));
             })->add(function ($req, $res, $next) {
                 $res->write('In2');
                 $res = $next($req, $res);
@@ -960,9 +954,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app->group('/foo', function ($app) {
             $app->group('/baz', function ($app) {
-                $app->get('/', function ($req, $res) {
-                    return $res->write('Center');
-                })->add(function ($req, $res, $next) {
+                $app->get('/', fn($req, $res) => $res->write('Center'))->add(function ($req, $res, $next) {
                     $res->write('In3');
                     $res = $next($req, $res);
                     $res->write('Out3');
@@ -1030,7 +1022,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals(405, (string)$resOut->getStatusCode());
         $this->assertEquals(['GET'], $resOut->getHeader('Allow'));
         $this->assertContains(
@@ -1040,7 +1032,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         // now test that exception is raised if the handler isn't registered
         unset($app->getContainer()['notAllowedHandler']);
-        $this->setExpectedException('Slim\Exception\MethodNotAllowedException');
+        $this->setExpectedException(\Slim\Exception\MethodNotAllowedException::class);
         $app($req, $res);
     }
 
@@ -1070,16 +1062,14 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('Hello', (string)$res->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithSetArgument()
     {
         $app = new App();
-        $app->get('/foo/bar', function ($req, $res, $args) {
-            return $res->write("Hello {$args['attribute']}");
-        })->setArgument('attribute', 'world!');
+        $app->get('/foo/bar', fn($req, $res, $args) => $res->write("Hello {$args['attribute']}"))->setArgument('attribute', 'world!');
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1098,16 +1088,14 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('Hello world!', (string)$res->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithSetArguments()
     {
         $app = new App();
-        $app->get('/foo/bar', function ($req, $res, $args) {
-            return $res->write("Hello {$args['attribute1']} {$args['attribute2']}");
-        })->setArguments(['attribute1' => 'there', 'attribute2' => 'world!']);
+        $app->get('/foo/bar', fn($req, $res, $args) => $res->write("Hello {$args['attribute1']} {$args['attribute2']}"))->setArguments(['attribute1' => 'there', 'attribute2' => 'world!']);
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1126,16 +1114,14 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('Hello there world!', (string)$res->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithNamedParameter()
     {
         $app = new App();
-        $app->get('/foo/{name}', function ($req, $res, $args) {
-            return $res->write("Hello {$args['name']}");
-        });
+        $app->get('/foo/{name}', fn($req, $res, $args) => $res->write("Hello {$args['name']}"));
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1154,21 +1140,17 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('Hello test!', (string)$res->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithNamedParameterRequestResponseArgStrategy()
     {
         $c = new Container();
-        $c['foundHandler'] = function ($c) {
-            return new RequestResponseArgs();
-        };
+        $c['foundHandler'] = fn($c) => new RequestResponseArgs();
 
         $app = new App($c);
-        $app->get('/foo/{name}', function ($req, $res, $name) {
-            return $res->write("Hello {$name}");
-        });
+        $app->get('/foo/{name}', fn($req, $res, $name) => $res->write("Hello {$name}"));
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1187,16 +1169,14 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('Hello test!', (string)$res->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithNamedParameterOverwritesSetArgument()
     {
         $app = new App();
-        $app->get('/foo/{name}', function ($req, $res, $args) {
-            return $res->write("Hello {$args['extra']} {$args['name']}");
-        })->setArguments(['extra' => 'there', 'name' => 'world!']);
+        $app->get('/foo/{name}', fn($req, $res, $args) => $res->write("Hello {$args['extra']} {$args['name']}"))->setArguments(['extra' => 'there', 'name' => 'world!']);
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1215,7 +1195,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('Hello there test!', (string)$res->getBody());
     }
 
@@ -1245,12 +1225,12 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertAttributeEquals(404, 'status', $resOut);
 
         // now test that exception is raised if the handler isn't registered
         unset($app->getContainer()['notFoundHandler']);
-        $this->setExpectedException('Slim\Exception\NotFoundException');
+        $this->setExpectedException(\Slim\Exception\NotFoundException::class);
         $app($req, $res);
     }
 
@@ -1287,7 +1267,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('Hello', (string)$res->getBody());
     }
 
@@ -1311,9 +1291,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app = new App();
         $container = $app->getContainer();
-        $container['foo'] = function () use ($mock, $res) {
-            return $mock;
-        };
+        $container['foo'] = fn() => $mock;
 
         $app->get('/foo', 'foo:bar');
 
@@ -1343,16 +1321,14 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app = new App();
         $container = $app->getContainer();
-        $container['foo'] = function () use ($mock, $res) {
-            return $mock;
-        };
+        $container['foo'] = fn() => $mock;
 
         $app->get('/foo', 'foo:bar');
 
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals(json_encode(['name'=>'bar', 'arguments' => []]), (string)$res->getBody());
     }
 
@@ -1394,9 +1370,7 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testCurrentRequestAttributesAreNotLostWhenAddingRouteArguments()
     {
         $app = new App();
-        $app->get('/foo/{name}', function ($req, $res, $args) {
-            return $res->write($req->getAttribute('one') . $args['name']);
-        });
+        $app->get('/foo/{name}', fn($req, $res, $args) => $res->write($req->getAttribute('one') . $args['name']));
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1422,14 +1396,10 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testCurrentRequestAttributesAreNotLostWhenAddingRouteArgumentsRequestResponseArg()
     {
         $c = new Container();
-        $c['foundHandler'] = function () {
-            return new RequestResponseArgs();
-        };
+        $c['foundHandler'] = fn() => new RequestResponseArgs();
 
         $app = new App($c);
-        $app->get('/foo/{name}', function ($req, $res, $name) {
-            return $res->write($req->getAttribute('one') . $name);
-        });
+        $app->get('/foo/{name}', fn($req, $res, $name) => $res->write($req->getAttribute('one') . $name));
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1595,7 +1565,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app->respond($resOut);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->expectOutputString('Hello');
     }
 
@@ -1627,7 +1597,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app->respond($resOut);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->expectOutputString('Hello');
     }
 
@@ -1658,7 +1628,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app->respond($resOut);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals([], $resOut->getHeader('Content-Type'));
         $this->assertEquals([], $resOut->getHeader('Content-Length'));
         $this->expectOutputString('');
@@ -1726,7 +1696,7 @@ class AppTest extends PHPUnit_Framework_TestCase
             $resOut = $app($req, $res);
             $app->respond($resOut);
 
-            $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+            $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
             $this->expectOutputString('Hello');
         } else {
             $this->assertTrue(true);
@@ -1738,7 +1708,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $body_stream = fopen('php://temp', 'r+');
         $response = new Response();
-        $body = $this->getMockBuilder("\Slim\Http\Body")
+        $body = $this->getMockBuilder(\Slim\Http\Body::class)
             ->setMethods(["getSize"])
             ->setConstructorArgs([$body_stream])
             ->getMock();
@@ -1780,19 +1750,16 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app->respond($resOut);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->expectOutputString(str_repeat('.', Mocks\SmallChunksStream::SIZE));
     }
 
     public function testResponseReplacesPreviouslySetHeaders()
     {
         $app = new App();
-        $app->get('/foo', function ($req, $res) {
-            return $res
-                ->withHeader('X-Foo', 'baz1')
-                ->withAddedHeader('X-Foo', 'baz2')
-                ;
-        });
+        $app->get('/foo', fn($req, $res) => $res
+            ->withHeader('X-Foo', 'baz1')
+            ->withAddedHeader('X-Foo', 'baz2'));
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1824,12 +1791,9 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testResponseDoesNotReplacePreviouslySetSetCookieHeaders()
     {
         $app = new App();
-        $app->get('/foo', function ($req, $res) {
-            return $res
-                ->withHeader('Set-Cookie', 'foo=bar')
-                ->withAddedHeader('Set-Cookie', 'bar=baz')
-                ;
-        });
+        $app->get('/foo', fn($req, $res) => $res
+            ->withHeader('Set-Cookie', 'foo=bar')
+            ->withAddedHeader('Set-Cookie', 'bar=baz'));
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -1878,15 +1842,13 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app->getContainer()['request'] = $req;
         $app->getContainer()['response'] = $res;
 
-        $mw = function ($req, $res, $next) {
+        $mw = function ($req, $res, $next): never {
             throw new Exception('middleware exception');
         };
 
         $app->add($mw);
 
-        $app->get('/foo', function ($req, $res) {
-            return $res;
-        });
+        $app->get('/foo', fn($req, $res) => $res);
 
         $resOut = $app->run(true);
 
@@ -1923,9 +1885,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app->add($mw);
 
-        $app->get('/foo', function ($req, $res) {
-            return $res;
-        });
+        $app->get('/foo', fn($req, $res) => $res);
 
         $resOut = $app->run(true);
 
@@ -1969,10 +1929,8 @@ class AppTest extends PHPUnit_Framework_TestCase
         $container = $app->getContainer();
         unset($container['errorHandler']);
 
-        $app->get('/foo', function ($req, $res, $args) {
-            return $res;
-        });
-        $app->add(function ($req, $res, $args) {
+        $app->get('/foo', fn($req, $res, $args) => $res);
+        $app->add(function ($req, $res, $args): never {
             throw new Exception();
         });
         $res = $app->run(true);
@@ -1981,10 +1939,8 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testRunSlimException()
     {
         $app = $this->appFactory();
-        $app->get('/foo', function ($req, $res, $args) {
-            return $res;
-        });
-        $app->add(function ($req, $res, $args) {
+        $app->get('/foo', fn($req, $res, $args) => $res);
+        $app->add(function ($req, $res, $args): never {
             $res->write("Failed");
             throw new SlimException($req, $res);
         });
@@ -2001,10 +1957,8 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testRunThrowable()
     {
         $app = $this->appFactory();
-        $app->get('/foo', function ($req, $res, $args) {
-            return $res;
-        });
-        $app->add(function ($req, $res, $args) {
+        $app->get('/foo', fn($req, $res, $args) => $res);
+        $app->add(function ($req, $res, $args): never {
             throw new Error('Failed');
         });
 
@@ -2020,10 +1974,8 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testRunNotFound()
     {
         $app = $this->appFactory();
-        $app->get('/foo', function ($req, $res, $args) {
-            return $res;
-        });
-        $app->add(function ($req, $res, $args) {
+        $app->get('/foo', fn($req, $res, $args) => $res);
+        $app->add(function ($req, $res, $args): never {
             throw new NotFoundException($req, $res);
         });
         $res = $app->run(true);
@@ -2040,10 +1992,8 @@ class AppTest extends PHPUnit_Framework_TestCase
         $container = $app->getContainer();
         unset($container['notFoundHandler']);
 
-        $app->get('/foo', function ($req, $res, $args) {
-            return $res;
-        });
-        $app->add(function ($req, $res, $args) {
+        $app->get('/foo', fn($req, $res, $args) => $res);
+        $app->add(function ($req, $res, $args): never {
             throw new NotFoundException($req, $res);
         });
         $res = $app->run(true);
@@ -2053,10 +2003,8 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testRunNotAllowed()
     {
         $app = $this->appFactory();
-        $app->get('/foo', function ($req, $res, $args) {
-            return $res;
-        });
-        $app->add(function ($req, $res, $args) {
+        $app->get('/foo', fn($req, $res, $args) => $res);
+        $app->add(function ($req, $res, $args): never {
             throw new MethodNotAllowedException($req, $res, ['POST']);
         });
         $res = $app->run(true);
@@ -2073,10 +2021,8 @@ class AppTest extends PHPUnit_Framework_TestCase
         $container = $app->getContainer();
         unset($container['notAllowedHandler']);
 
-        $app->get('/foo', function ($req, $res, $args) {
-            return $res;
-        });
-        $app->add(function ($req, $res, $args) {
+        $app->get('/foo', fn($req, $res, $args) => $res);
+        $app->add(function ($req, $res, $args): never {
             throw new MethodNotAllowedException($req, $res, ['POST']);
         });
         $res = $app->run(true);
@@ -2086,9 +2032,7 @@ class AppTest extends PHPUnit_Framework_TestCase
     {
         $app = $this->appFactory();
 
-        $app->get('/foo', function ($req, $res) {
-            return $res->write("Test");
-        });
+        $app->get('/foo', fn($req, $res) => $res->write("Test"));
 
         $app->getContainer()['settings']['determineRouteBeforeAppMiddleware'] = true;
 
@@ -2121,15 +2065,13 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app->getContainer()['request'] = $req;
         $app->getContainer()['response'] = $res;
 
-        $mw = function ($req, $res, $next) {
+        $mw = function ($req, $res, $next): never {
             throw new RuntimeException('middleware exception');
         };
 
         $app->add($mw);
 
-        $app->get('/foo', function ($req, $res) {
-            return $res;
-        });
+        $app->get('/foo', fn($req, $res) => $res);
 
         $resOut = $app->run(true);
 
@@ -2139,7 +2081,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testFinalize()
     {
-        $method = new ReflectionMethod('Slim\App', 'finalize');
+        $method = new ReflectionMethod(\Slim\App::class, 'finalize');
         $method->setAccessible(true);
 
         $response = new Response();
@@ -2153,7 +2095,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testFinalizeWithoutBody()
     {
-        $method = new ReflectionMethod('Slim\App', 'finalize');
+        $method = new ReflectionMethod(\Slim\App::class, 'finalize');
         $method->setAccessible(true);
 
         $response = $method->invoke(new App(), new Response(304));
@@ -2165,11 +2107,7 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testCallingAContainerCallable()
     {
         $settings = [
-            'foo' => function ($c) {
-                return function ($a) {
-                    return $a;
-                };
-            }
+            'foo' => fn($c) => fn($a) => $a
         ];
         $app = new App($settings);
 
@@ -2192,9 +2130,7 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testCallingFromContainerNotCallable()
     {
         $settings = [
-            'foo' => function ($c) {
-                return null;
-            }
+            'foo' => fn($c) => null
         ];
         $app = new App($settings);
         $app->foo('bar');
@@ -2221,7 +2157,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testOmittingContentLength()
     {
-        $method = new ReflectionMethod('Slim\App', 'finalize');
+        $method = new ReflectionMethod(\Slim\App::class, 'finalize');
         $method->setAccessible(true);
 
         $response = new Response();
@@ -2243,7 +2179,7 @@ class AppTest extends PHPUnit_Framework_TestCase
     {
         $this->expectOutputString('test'); // needed to avoid risky test warning
         echo "test";
-        $method = new ReflectionMethod('Slim\App', 'finalize');
+        $method = new ReflectionMethod(\Slim\App::class, 'finalize');
         $method->setAccessible(true);
 
         $response = new Response();
@@ -2302,9 +2238,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
         $app = new App();
         $container = $app->getContainer();
-        $container['foo'] = function () use ($mock, $res) {
-            return $mock;
-        };
+        $container['foo'] = fn() => $mock;
 
         /** @var $router Router */
         $router = $container['router'];
@@ -2314,13 +2248,13 @@ class AppTest extends PHPUnit_Framework_TestCase
         // Invoke app
         $resOut = $app($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals(json_encode(['name'=>'bar', 'arguments' => []]), (string)$res->getBody());
     }
 
     public function testIsEmptyResponseWithEmptyMethod()
     {
-        $method = new ReflectionMethod('Slim\App', 'isEmptyResponse');
+        $method = new ReflectionMethod(\Slim\App::class, 'isEmptyResponse');
         $method->setAccessible(true);
 
         $response = new Response();
@@ -2332,7 +2266,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testIsEmptyResponseWithoutEmptyMethod()
     {
-        $method = new ReflectionMethod('Slim\App', 'isEmptyResponse');
+        $method = new ReflectionMethod(\Slim\App::class, 'isEmptyResponse');
         $method->setAccessible(true);
 
         /** @var Response $response */
@@ -2346,7 +2280,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testIsHeadRequestWithGetRequest()
     {
-        $method = new ReflectionMethod('Slim\App', 'isHeadRequest');
+        $method = new ReflectionMethod(\Slim\App::class, 'isHeadRequest');
         $method->setAccessible(true);
 
         /** @var Request $request */
@@ -2360,7 +2294,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testIsHeadRequestWithHeadRequest()
     {
-        $method = new ReflectionMethod('Slim\App', 'isHeadRequest');
+        $method = new ReflectionMethod(\Slim\App::class, 'isHeadRequest');
         $method->setAccessible(true);
 
         /** @var Request $request */
@@ -2375,14 +2309,14 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testHandlePhpError()
     {
         $this->skipIfPhp70();
-        $method = new ReflectionMethod('Slim\App', 'handlePhpError');
+        $method = new ReflectionMethod(\Slim\App::class, 'handlePhpError');
         $method->setAccessible(true);
 
         $throwable = $this->getMock(
             '\Throwable',
             ['getCode', 'getMessage', 'getFile', 'getLine', 'getTraceAsString', 'getPrevious']
         );
-        $req = $this->getMockBuilder('Slim\Http\Request')->disableOriginalConstructor()->getMock();
+        $req = $this->getMockBuilder(\Slim\Http\Request::class)->disableOriginalConstructor()->getMock();
         $res = new Response();
 
         $res = $method->invoke(new App(), $throwable, $req, $res);
@@ -2397,7 +2331,7 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = $this->appFactory();
         $app->getContainer()['settings']['outputBuffering'] = false;
 
-        $app->get("/foo", function ($request, $response, $args) {
+        $app->get("/foo", function ($request, $response, $args): never {
             $test = [1,2,3];
             var_dump($test);
             throw new Exception("oops");
@@ -2429,7 +2363,7 @@ end;
 
         $app = $this->appFactory();
         $app->getContainer()['settings']['outputBuffering'] = 'append';
-        $app->get("/foo", function ($request, $response, $args) {
+        $app->get("/foo", function ($request, $response, $args): never {
             echo 'output buffer test';
             throw new Exception("oops");
         });
@@ -2448,7 +2382,7 @@ end;
 
         $app = $this->appFactory();
         $app->getContainer()['settings']['outputBuffering'] = 'prepend';
-        $app->get("/foo", function ($request, $response, $args) {
+        $app->get("/foo", function ($request, $response, $args): never {
             echo 'output buffer test';
             throw new Exception("oops");
         });
@@ -2461,9 +2395,7 @@ end;
     public function testInvokeSequentialProccessToAPathWithOptionalArgsAndWithoutOptionalArgs()
     {
         $app = new App();
-        $app->get('/foo[/{bar}]', function ($req, $res, $args) {
-            return $res->write(count($args));
-        });
+        $app->get('/foo[/{bar}]', fn($req, $res, $args) => $res->write(count($args)));
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -2482,7 +2414,7 @@ end;
         // Invoke process with optional arg
         $resOut = $app->process($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('1', (string)$resOut->getBody());
 
         // Prepare request and response objects
@@ -2502,16 +2434,14 @@ end;
         // Invoke process without optional arg
         $resOut2 = $app->process($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut2);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut2);
         $this->assertEquals('0', (string)$resOut2->getBody());
     }
 
     public function testInvokeSequentialProccessToAPathWithOptionalArgsAndWithoutOptionalArgsAndKeepSetedArgs()
     {
         $app = new App();
-        $app->get('/foo[/{bar}]', function ($req, $res, $args) {
-            return $res->write(count($args));
-        })->setArgument('baz', 'quux');
+        $app->get('/foo[/{bar}]', fn($req, $res, $args) => $res->write(count($args)))->setArgument('baz', 'quux');
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -2530,7 +2460,7 @@ end;
         // Invoke process without optional arg
         $resOut = $app->process($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('2', (string)$resOut->getBody());
 
         // Prepare request and response objects
@@ -2550,16 +2480,14 @@ end;
         // Invoke process with optional arg
         $resOut2 = $app->process($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut2);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut2);
         $this->assertEquals('1', (string)$resOut2->getBody());
     }
 
     public function testInvokeSequentialProccessAfterAddingAnotherRouteArgument()
     {
         $app = new App();
-        $route = $app->get('/foo[/{bar}]', function ($req, $res, $args) {
-            return $res->write(count($args));
-        })->setArgument('baz', 'quux');
+        $route = $app->get('/foo[/{bar}]', fn($req, $res, $args) => $res->write(count($args)))->setArgument('baz', 'quux');
 
         // Prepare request and response objects
         $env = Environment::mock([
@@ -2578,7 +2506,7 @@ end;
         // Invoke process with optional arg
         $resOut = $app->process($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut);
         $this->assertEquals('2', (string)$resOut->getBody());
 
         // Prepare request and response objects
@@ -2601,7 +2529,7 @@ end;
         // Invoke process with optional arg
         $resOut2 = $app->process($req, $res);
 
-        $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $resOut2);
+        $this->assertInstanceOf(\Psr\Http\Message\ResponseInterface::class, $resOut2);
         $this->assertEquals('3', (string)$resOut2->getBody());
     }
 

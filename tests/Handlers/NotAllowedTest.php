@@ -43,7 +43,7 @@ class NotAllowedTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($res->hasHeader('Allow'));
         $this->assertSame($contentType, $res->getHeaderLine('Content-Type'));
         $this->assertEquals('POST, PUT', $res->getHeaderLine('Allow'));
-        $this->assertEquals(0, strpos((string)$res->getBody(), $startOfBody));
+        $this->assertEquals(0, strpos((string)$res->getBody(), (string) $startOfBody));
     }
 
     public function testOptions()
@@ -75,7 +75,7 @@ class NotAllowedTest extends PHPUnit_Framework_TestCase
      */
     protected function getRequest($method, $contentType = 'text/html')
     {
-        $req = $this->getMockBuilder('Slim\Http\Request')->disableOriginalConstructor()->getMock();
+        $req = $this->getMockBuilder(\Slim\Http\Request::class)->disableOriginalConstructor()->getMock();
         $req->expects($this->once())->method('getMethod')->will($this->returnValue($method));
         $req->expects($this->any())->method('getHeaderLine')->will($this->returnValue($contentType));
 

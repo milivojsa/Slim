@@ -98,9 +98,6 @@ interface RouteInterface
 
     /**
      * Prepare the route for use
-     *
-     * @param ServerRequestInterface $request
-     * @param array                  $arguments
      */
     public function prepare(ServerRequestInterface $request, array $arguments);
 
@@ -111,8 +108,6 @@ interface RouteInterface
      * and captures the resultant HTTP response object. It then sends the response
      * back to the Application.
      *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
      *
      * @return ResponseInterface
      */
